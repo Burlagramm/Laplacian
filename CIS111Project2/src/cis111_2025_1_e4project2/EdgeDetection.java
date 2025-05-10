@@ -8,31 +8,50 @@ public class EdgeDetection {
 	public static int[][] edgeDetector(int[][] image) {
 		// below-0123456789-V toDo  // do not change this line ~~~~~~~~~~ V
 		// TODO your code should be between below and above marks.
-		int height = image.length;
-        int width  = image[0].length;
-        int[][] output = new int[height][width];
+		if (image == null || image.length == 0 || image[0].length == 0) {
+	        return new int[0][0];
+	    }
 
-        for (int i = 0; i < height; i++) {
-            for (int j = 0; j < width; j++) {
-                int sum = 0;
-                // apply 3×3 Laplacian kernel
-                for (int ki = 0; ki < 3; ki++) {
-                    for (int kj = 0; kj < 3; kj++) {
-                        int ii = i + ki - 1;
-                        int jj = j + kj - 1;
-                        int pixel = 0;
-                        if (ii >= 0 && ii < height && jj >= 0 && jj < width) {
-                            pixel = image[ii][jj];
-                        }
-                        sum += pixel * LAPLACE_KERNEL[ki][kj];
-                    }
-                }
+	    int height = image.length;
+	    int width = image[0].length;
+	    int[][] edges = new int[height][width];
 
-                // any non-zero response is an edge → mark as 255
-                output[i][j] = (sum != 0) ? 255 : 0;
-            }
-        }
-        return output;
+	    for (int i = 0; i < height; i++) {
+	        for (int j = 0; j < width; j++) {
+	            int topNeighbor = 0;
+	            if (i > 0) {
+	                topNeighbor = image[i - 1][j];
+	            }
+
+	            int bottomNeighbor = 0;
+	            if (i < height - 1) {
+	                bottomNeighbor = image[i + 1][j];
+	            }
+
+	            int leftNeighbor = 0;
+	            if (j > 0) {
+	                leftNeighbor = image[i][j - 1];
+	            }
+
+	            int rightNeighbor = 0;
+	            if (j < width - 1) {
+	                rightNeighbor = image[i][j + 1];
+	            }
+
+	            int laplaceResponse = 4 * image[i][j] -
+	                                    topNeighbor -
+	                                    bottomNeighbor -
+	                                    leftNeighbor -
+	                                    rightNeighbor;
+
+	            if (laplaceResponse != 0 && image[i][j] == 0) {
+	                edges[i][j] = 255;
+	            } else {
+	                edges[i][j] = 0;
+	            }
+	        }
+	    }
+	    return edges;
 
 		 //return new int[][] {{}}; // ~~fake~~
 
@@ -43,18 +62,22 @@ public class EdgeDetection {
 		
 		// below-0123456789-V toDo  // do not change this line ~~~~~~~~~~ V
 		// TODO your code should be between below and above marks.
-		 StringBuilder sb = new StringBuilder();
-	        int height = outImg.length;
-	        int width  = outImg[0].length;
+		 if (outImg == null || outImg.length == 0 || outImg[0].length == 0) {
+			return "";
+		}
 
-	        for (int i = 0; i < height; i++) {
-	            for (int j = 0; j < width; j++) {
-	                // plot edges as '*' for visualization
-	                sb.append(outImg[i][j] > 0 ? '*' : ' ');
-	            }
-	            sb.append('\n');
-	        }
-	        return sb.toString();
+		StringBuilder plot = new StringBuilder();
+		for (int[] row : outImg) {
+			for (int pixel : row) {
+				if (pixel == 255) {
+					plot.append(".");
+				} else {
+					plot.append(" ");
+				}
+			}
+			plot.append("\n");
+		}
+		return plot.toString();
 		 //return ""; // ~~fake~~
 
 		// above-0123456789-A toDo  // do not change this line ~~~~~~~~~~ A
